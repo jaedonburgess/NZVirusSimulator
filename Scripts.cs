@@ -10,13 +10,10 @@ namespace NZVirusSimulator
         public static void DrawTitle() 
         {
             Console.ForegroundColor = ConsoleColor.White;
-            Console.WriteLine(" -----------------");
-            Console.WriteLine("|   New Zealand   |");
+            Console.WriteLine("[New Zealand Virus Simulator]");
             Console.ForegroundColor = ConsoleColor.Yellow;
-            Console.WriteLine("| Virus Simulator |");
+            Console.WriteLine("By jbapps (Jaedon Burgess) - 2021");
             Console.ForegroundColor = ConsoleColor.White;
-            Console.WriteLine("|   By Jaedon B   |");
-            Console.WriteLine(" -----------------");
             Console.WriteLine();
         }
     }
