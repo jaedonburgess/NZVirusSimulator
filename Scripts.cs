@@ -17,5 +17,13 @@ namespace NZVirusSimulator
             Console.ForegroundColor = ConsoleColor.White;
             Console.WriteLine();
         }
+
+        // Globally called random number generator
+        public static int RandomNumber(int range)
+        {
+            Random random = new Random();
+            int num = random.Next(1, range);
+            return num;
+        }
     }
 }
