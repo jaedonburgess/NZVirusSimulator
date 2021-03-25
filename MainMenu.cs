@@ -4,8 +4,14 @@ namespace NZVirusSimulator
 {
     class MainMenu
     {
-        static void Main(string[] args)
+        public static void Main(string[] args)
         {
+            Draw();
+        }
+
+        public static void Draw()
+        {
+            Console.Clear();
             Scripts.DrawTitle();
         }
     }
