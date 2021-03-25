@@ -17,7 +17,7 @@ namespace NZVirusSimulator
             Console.Clear();
             Scripts.DrawTitle();
             Console.WriteLine(" -----------------------");
-            Console.WriteLine("| 1: Option 1           |");
+            Console.WriteLine("| 1: Simulate           |");
             Console.WriteLine("| 2: Exit               |");
             Console.WriteLine(" -----------------------");
             Console.WriteLine();
@@ -47,6 +47,7 @@ namespace NZVirusSimulator
             switch (option)
             {
                 case 1:
+                    Simulation.Start();
                     break;
                 case 2:
                     Console.Clear();
