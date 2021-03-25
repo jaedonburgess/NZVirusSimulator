@@ -22,8 +22,8 @@ namespace NZVirusSimulator
         public static int RandomNumber(int range)
         {
             Random random = new Random();
-            int num = random.Next(1, range);
-            return num;
+            int randomNum = random.Next(1, range);
+            return randomNum;
         }
     }
 }
