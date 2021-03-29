@@ -18,7 +18,7 @@ namespace NZVirusSimulator
         public static void Draw()
         {
             Console.Clear();
-            Scripts.DrawTitle();
+            Scripts.DrawTitle("Simulation");
             Console.WriteLine("Simulating Day {0}:", Scripts.day);
         }
     }

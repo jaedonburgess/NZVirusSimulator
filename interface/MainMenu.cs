@@ -15,14 +15,15 @@ namespace NZVirusSimulator
         public static void Draw()
         {
             Console.Clear();
-            Scripts.DrawTitle();
+            Scripts.DrawTitle("Main Menu");
             Console.WriteLine(" -----------------------");
             Console.WriteLine("| 1: Continue           |");
-            Console.WriteLine("| 2: Load Presets       |");
-            Console.WriteLine("| 3: Create Custom Game |");
-            Console.WriteLine("| 4: Load Save          |");
-            Console.WriteLine("| 5: Simulate           |");
-            Console.WriteLine("| 6: Exit               |");
+            Console.WriteLine("| 2: View Settings      |");
+            Console.WriteLine("| 3: Load Presets       |");
+            Console.WriteLine("| 4: Create Custom Game |");
+            Console.WriteLine("| 5: Load Save          |");
+            Console.WriteLine("| 6: Simulate           |");
+            Console.WriteLine("| 7: Exit               |");
             Console.WriteLine(" -----------------------");
             Console.WriteLine();
             ReadMenu(); //Asks for menu input
@@ -52,16 +53,19 @@ namespace NZVirusSimulator
             {
                 case 1:
                 case 2:
+                    Settings.Start();
+                    break;
                 case 3:
                 case 4:
+                case 5:
                     Console.WriteLine("This option is under construction [Please Wait...]");
                     Thread.Sleep(2000);
                     Draw();
                     break;
-                case 5:
+                case 6:
                     Simulation.Start();
                     break;
-                case 6:
+                case 7:
                     Console.Clear();
                     break;
                 default:
