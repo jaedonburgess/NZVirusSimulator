@@ -17,9 +17,11 @@ namespace NZVirusSimulator
         public static int dayIncrement = 1;
         public static int day = 0;
         public static double budget = 5000000000; // Base budget of 5 billion
+        public static int alertLevel = 1;
 
         // Error codes
         public static string strError = "\0 E3RR0R";
+        public static int intError = 0;
 
         // Draw application title (to be used for draw methods so this long stretch of code doesn't have to be rewritten)
         public static void DrawTitle(string title) 
@@ -93,6 +95,33 @@ namespace NZVirusSimulator
             }
 
             return str;
+        }
+
+        // Read an integer
+        public static int ReadInt()
+        {
+            // Init variables
+            int num = 0;
+
+            // Run while string is empty
+            while (num == 0)
+            {
+                try
+                {
+                    num = Int32.Parse(Console.ReadLine());
+                }
+                catch
+                {
+                    return intError;
+                }
+
+                if (num == 0)
+                {
+                    return intError;
+                }
+            }
+
+            return num;
         }
     }
 }

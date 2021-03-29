@@ -86,7 +86,7 @@ namespace NZVirusSimulator
                             Draw(true);
                             break;
                         }
-                        else if (yn != "y" || yn != "n" || yn != "Y" || yn != "N") // If Y then reset to default settings
+                        else if (yn != "y" || yn != "n" || yn != "Y" || yn != "N") // if Y then reset to default settings
                         {
                             Draw(false);
                             yn = "";
