@@ -17,13 +17,10 @@ namespace NZVirusSimulator
             Console.Clear();
             Scripts.DrawTitle("Main Menu");
             Console.WriteLine(" -----------------------");
-            Console.WriteLine("| 1: Continue           |");
+            Console.WriteLine("| 1: Simulate           |");
             Console.WriteLine("| 2: View Settings      |");
             Console.WriteLine("| 3: Load Presets       |");
-            Console.WriteLine("| 4: Create Custom Game |");
-            Console.WriteLine("| 5: Load Save          |");
-            Console.WriteLine("| 6: Simulate           |");
-            Console.WriteLine("| 7: Exit               |");
+            Console.WriteLine("| 4: Exit               |");
             Console.WriteLine(" -----------------------");
             Console.WriteLine();
             ReadMenu(); //Asks for menu input
@@ -52,20 +49,17 @@ namespace NZVirusSimulator
             switch (option)
             {
                 case 1:
+                    Simulation.Start();
+                    break;
                 case 2:
                     Settings.Start();
                     break;
                 case 3:
-                case 4:
-                case 5:
                     Console.WriteLine("This option is under construction [Please Wait...]");
                     Thread.Sleep(2000);
                     Draw();
                     break;
-                case 6:
-                    Simulation.Start();
-                    break;
-                case 7:
+                case 4:
                     Console.Clear();
                     break;
                 default:

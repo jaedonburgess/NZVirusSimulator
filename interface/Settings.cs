@@ -19,9 +19,9 @@ namespace NZVirusSimulator
             Console.WriteLine("Virus Name: {0}", Scripts.virusName);
             Console.WriteLine("Virus R Value: {0}", Scripts.rValue);
             Console.WriteLine("Fatality Rate: {0}", Scripts.fatalityRate);
+            Console.WriteLine("Starting Budget: {0}", Scripts.budget);
             Console.WriteLine("Maximum Imported Cases: {0} cases", Scripts.maxImported);
             Console.WriteLine("Day Incrementation: {0} days", Scripts.dayIncrement);
-            Console.WriteLine("Starting Budget: {0}", Scripts.budget);
             DrawMenu(read);
         }
 
@@ -64,11 +64,13 @@ namespace NZVirusSimulator
             //Checks through options to execute valid options and reset invalid options
             switch (option)
             {
+                // Asks each value, then displays the new values
                 case 1:
                     Console.WriteLine("This option is under construction [Please Wait...]");
                     Thread.Sleep(2000);
                     Draw(true);
                     break;
+                // Asks if you want to reset, then it resets
                 case 2:
                     // Ask for Y or N input
                     while (yn == "")
