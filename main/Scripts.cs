@@ -8,16 +8,18 @@ namespace NZVirusSimulator
     class Scripts 
     {
         // Init global variables
-        public static string virusName = "Pandemivirus";
-        public static double rValue = 0;
-        public static double fatalityRate = 0;
+        public static string virusName = "SARS-CoV 2";
+        public static double rValue = 2.25; // COVID-19 R-Value
+        public static double fatalityRate = 0.34; // 34%
         public static string headline = "";
-        public static int maxImported = 2; // Random number generator starts at 1 so this avoids any initial errors
+        public static int maxImported = 2; // Random number generator starts at 1 so this avoids any initial errors | This value will increase without border control
         public static double importedCases = Scripts.RandomNumber(maxImported);
         public static int dayIncrement = 1;
         public static int day = 0;
         public static double budget = 5000000000; // Base budget of 5 billion
         public static int alertLevel = 1;
+        public static double population = 4917000; // Population of New Zealand
+        public static bool bordersClosed = false; // When the borders are open, max imported cases will increase
 
         // Error codes
         public static string strError = "\0 E3RR0R";
@@ -93,7 +95,6 @@ namespace NZVirusSimulator
                     return strError;
                 }
             }
-
             return str;
         }
 
@@ -120,7 +121,6 @@ namespace NZVirusSimulator
                     return intError;
                 }
             }
-
             return num;
         }
     }

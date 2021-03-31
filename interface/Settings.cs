@@ -19,7 +19,7 @@ namespace NZVirusSimulator
             Console.WriteLine("Virus Name: {0}", Scripts.virusName);
             Console.WriteLine("Virus R Value: {0}", Scripts.rValue);
             Console.WriteLine("Fatality Rate: {0}", Scripts.fatalityRate);
-            Console.WriteLine("Starting Budget: {0}", Scripts.budget);
+            Console.WriteLine("Starting Budget: ${0}", Scripts.budget);
             Console.WriteLine("Maximum Imported Cases: {0} cases", Scripts.maxImported);
             Console.WriteLine("Day Incrementation: {0} days", Scripts.dayIncrement);
             DrawMenu(read);
