@@ -26,6 +26,7 @@ namespace NZVirusSimulator
         public static double totalCases = 0;
         public static double borderCases = 0;
         public static double communityCases = 0;
+        public static double newCommunityCases = 0;
         public static int passengersEntering = 300;
         public static bool isolationEnforced = false;
 
