@@ -21,7 +21,6 @@ namespace NZVirusSimulator
             Console.WriteLine("Fatality Rate: {0}", Simulation.fatalityRate);
             Console.WriteLine("Starting Budget: ${0}", Simulation.budget);
             Console.WriteLine("Maximum Imported Cases: {0} cases", Simulation.maxImported);
-            Console.WriteLine("Day Incrementation: {0} days", Simulation.dayIncrement);
             DrawMenu(read);
         }
 
