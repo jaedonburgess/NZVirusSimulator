@@ -16,12 +16,12 @@ namespace NZVirusSimulator
         {
             Console.Clear();
             Scripts.DrawTitle("Settings");
-            Console.WriteLine("Virus Name: {0}", Scripts.virusName);
-            Console.WriteLine("Virus R Value: {0}", Scripts.rValue);
-            Console.WriteLine("Fatality Rate: {0}", Scripts.fatalityRate);
-            Console.WriteLine("Starting Budget: ${0}", Scripts.budget);
-            Console.WriteLine("Maximum Imported Cases: {0} cases", Scripts.maxImported);
-            Console.WriteLine("Day Incrementation: {0} days", Scripts.dayIncrement);
+            Console.WriteLine("Virus Name: {0}", Simulation.virusName);
+            Console.WriteLine("Virus R Value: {0}", Simulation.rValue);
+            Console.WriteLine("Fatality Rate: {0}", Simulation.fatalityRate);
+            Console.WriteLine("Starting Budget: ${0}", Simulation.budget);
+            Console.WriteLine("Maximum Imported Cases: {0} cases", Simulation.maxImported);
+            Console.WriteLine("Day Incrementation: {0} days", Simulation.dayIncrement);
             DrawMenu(read);
         }
 
@@ -79,7 +79,7 @@ namespace NZVirusSimulator
                         yn = Scripts.ReadString();
                         if (yn == "y" || yn == "Y") // if yes reset
                         {
-                            Scripts.ResetDefaults();
+                            Simulation.ResetDefaults();
                             Draw(true);
                             break;
                         }
