@@ -25,6 +25,7 @@ namespace NZVirusSimulator
         public static double borderCases = 0;
         public static double communityCases = 0;
         public static double newCommunityCases = 0;
+        public static double vaccinations = 0;
         public static int passengersEntering = 300;
         public static bool isolationEnforced = false;
 
@@ -46,17 +47,38 @@ namespace NZVirusSimulator
         // Start the simulation
         public static void Start()
         {
-            // Debug loop to test simulation
+            // Run simulation while gameRunning is true
             while (gameRunning)
             {
                 Draw();
 
-                // When enter is pressed, the user continues on to the next day of the simulation
-                Console.WriteLine();
-                Console.WriteLine("---------------------------------------");
-                Console.WriteLine(" Press enter to continue to next day...");
-                Console.WriteLine("---------------------------------------");
-                Console.ReadLine();
+                if (gameRunning) // Makes sure the continue feature doesn't run again if the simulation wins or fails
+                {
+                    // When enter is pressed, the user continues on to the next day of the simulation
+                    Console.WriteLine();
+                    Console.WriteLine("---------------------------------------");
+                    Console.WriteLine(" Press enter to continue to next day...");
+                    Console.WriteLine("---------------------------------------");
+                    Console.ReadLine();
+                } 
+                else
+                {
+                    break;
+                }
+            }
+
+            // Clear console before final message
+            Console.Clear();
+            Scripts.DrawTitle("Simulation");
+
+            // Depending on success a different message will be displayed (Will change to headline eventually)
+            if (finishSuccess)
+            {
+                Console.WriteLine("Congratulations, you succeeded!");
+            }
+            else
+            {
+                Console.WriteLine("Congratulations, you failed! Everyone got '{0}'!", virusName);
             }
 
 
@@ -66,7 +88,7 @@ namespace NZVirusSimulator
         // Draw interface and results of simulation
         public static void Draw()
         {
-            Simulate();
+            Simulate(); // Start simulation
             Console.Clear();
             Scripts.DrawTitle("Simulation");
             Console.WriteLine("Simulating Day {0}", day);
@@ -144,7 +166,21 @@ namespace NZVirusSimulator
             communityCases += newCommunityCases; // Add new community cases to community case count
 
             totalCases = borderCases + communityCases; // Sum for total cases
-            day++;
+
+            if (totalCases >= population)
+            {
+                gameRunning = false; // Stop simulation loop
+                finishSuccess = false; // Player did not succeed
+            }
+            else if (vaccinations >= population)
+            {
+                gameRunning = false; // Stop simulation loop
+                finishSuccess = true; // Player succeeded
+            }
+            else
+            {
+                day++; // Increment day if sim not finished
+            }
         }
     }
 }
