@@ -9,8 +9,8 @@ namespace NZVirusSimulator
         // Init global variables
         public static string virusName = "SARS-CoV 2";
         public static double rValue = 2.25; // COVID-19 R-Value
-        public static double workingRValue = 2.25; // Changed to reduce transmissions
-        public static double fatalityRate = 0.34; // 34%
+        public static double workingRValue = rValue; // Changed to reduce transmissions
+        public static double fatalityRate = 3.4; // 3.4%
         public static int maxImported = 2; // Random number generator starts at 1 so this avoids any initial errors | This value will increase without border control
         public static double importedCases = 0;
         public static int day = 0;
@@ -22,12 +22,14 @@ namespace NZVirusSimulator
         public static bool gameRunning = true;
         public static double deaths = 0;
         public static double totalCases = 0;
+        public static double activeCases = 0;
         public static double borderCases = 0;
         public static double communityCases = 0;
         public static double newCommunityCases = 0;
         public static double vaccinations = 0;
         public static int passengersEntering = 300;
         public static bool isolationEnforced = false;
+        public static int[] casesOnDay = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
 
         // Resets all variables back to default values
         public static void ResetDefaults()
@@ -98,6 +100,7 @@ namespace NZVirusSimulator
             Console.WriteLine("----------------------------------------------------------");
             Console.WriteLine();
             Console.WriteLine("Total Cases: {0}", totalCases);
+            Console.WriteLine("Active Cases: {0}", activeCases);
             Console.WriteLine("New Community Cases: {0}", newCommunityCases);
             Console.WriteLine("Community Cases: {0}", totalCases);
             Console.WriteLine("Imported Cases: {0}", importedCases);
@@ -118,6 +121,17 @@ namespace NZVirusSimulator
 
         public static void Simulate()
         {
+            // Move active cases down a step in the array
+            for (int i = 1; i <= 13; i++) // Starts at 1 because there are no days before 0 so no point removing
+            {
+                // Init variable
+                int movingValue = 0;
+
+                // Set next day in array to moving variable (current day)
+                movingValue = casesOnDay[i];
+                casesOnDay[i - 1] = movingValue;
+            }
+
             // For Each Ranges OR Iterating using a for
             // https://stackoverflow.com/questions/38379400/c-sharp-int-type-in-foreach-statement
 
@@ -167,6 +181,8 @@ namespace NZVirusSimulator
 
             totalCases = borderCases + communityCases; // Sum for total cases
 
+            casesOnDay[13] = Convert.ToInt32(newCommunityCases); // Add community cases to new cases on this day
+
             if (totalCases >= population)
             {
                 gameRunning = false; // Stop simulation loop
@@ -179,6 +195,9 @@ namespace NZVirusSimulator
             }
             else
             {
+                activeCases += casesOnDay[13];
+                activeCases -= casesOnDay[0]; // Remove cases from active cases if it has been 14 days
+                activeCases -= deaths;
                 day++; // Increment day if sim not finished
             }
         }
