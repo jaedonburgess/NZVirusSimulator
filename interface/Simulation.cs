@@ -8,7 +8,7 @@ namespace NZVirusSimulator
     {
         // Init global variables
         public static string virusName = "SARS-CoV 2";
-        public static double rValue = 2.25; // COVID-19 R-Value
+        public static double rValue = 2.4; // COVID-19 R-Value
         public static double workingRValue = rValue; // Changed to reduce transmissions
         public static double fatalityRate = 3.4; // 3.4%
         public static int maxImported = 2; // Random number generator starts at 1 so this avoids any initial errors | This value will increase without border control
@@ -25,14 +25,14 @@ namespace NZVirusSimulator
         public static double totalCases = 0;
         public static double activeCases = 0;
         public static double closedCases = 0;
-        public static double borderCases = 0;
         public static double communityCases = 0;
         public static double newCommunityCases = 0;
         public static double recoveredCases = 0;
         public static double vaccinations = 0;
         public static int passengersEntering = 300;
         public static bool isolationEnforced = false;
-        public static int[] casesOnDay = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+        public static double[] casesOnDay = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+        public static double[] newCaseDelayArray = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
         public static int fourteenDayIncrement = 0;
 
         // Resets all variables back to default values
@@ -110,11 +110,11 @@ namespace NZVirusSimulator
             Console.WriteLine("Recovered Cases: {0}", recoveredCases);
             Console.WriteLine("Active Cases: {0}", activeCases);
             Console.WriteLine("--------------------------");
-            Console.WriteLine("New Community Cases: {0}", newCommunityCases);
-            Console.WriteLine("New Deaths: {0}", newDeaths);
-            Console.WriteLine("--------------------------");
             Console.WriteLine("Community Cases: {0}", totalCases);
             Console.WriteLine("Imported Cases: {0}", importedCases);
+            Console.WriteLine("--------------------------");
+            Console.WriteLine("New Community Cases: {0}", newCommunityCases);
+            Console.WriteLine("New Deaths: {0}", newDeaths);
             Console.WriteLine("--------------------------");
             Console.WriteLine("Transmissibility: {0}", workingRValue);
             Console.WriteLine("Fatality Rate: {0}", fatalityRate);
@@ -135,26 +135,37 @@ namespace NZVirusSimulator
             return "Virus Situation Remains the Same";
         }
 
-
+        // Virus simulator algorithm
         public static void Simulate()
         {
-
             // Move active cases down a step in the array
             for (int i = 1; i <= 13; i++) // Starts at 1 because there are no days before 0 so no point removing
             {
                 // Init variable
-                int movingValue = 0;
+                double movingValue = 0;
 
                 // Set next day in array to moving variable (current day)
                 movingValue = casesOnDay[i];
                 casesOnDay[i - 1] = movingValue;
             }
 
-            // For Each Ranges OR Iterating using a for
-            // https://stackoverflow.com/questions/38379400/c-sharp-int-type-in-foreach-statement
+            // Move new cases down a step in the array
+            for (int i = 1; i <= 13; i++) // Starts at 1 because there are no days before 0 so no point removing
+            {
+                // Init variable
+                double movingValue = 0;
 
-            importedCases = Scripts.RandomNumber(maxImported); // Get daily imported cases
+                // Set next day in array to moving variable (current day)
+                movingValue = newCaseDelayArray[i];
+                newCaseDelayArray[i - 1] = movingValue;
+            }
 
+            // Get daily imported cases with random number generator
+            importedCases = Scripts.RandomNumber(maxImported);
+
+            // Runs conditional statements to find new cases depending on border and/or isolation conditions
+            /* For Each Ranges OR Iterating using a for
+               https://stackoverflow.com/questions/38379400/c-sharp-int-type-in-foreach-statement */
             if (bordersClosed) // Runs when borders are closed
             {
                 if (communityCases > 0) // Runs when community cases are greater than 0 while borders are closed
@@ -163,16 +174,16 @@ namespace NZVirusSimulator
                     {
                         for (int i = 1; i <= communityCases; i++) // Variable 'i' can be 1 because community cases are greater than 0
                         {
-                            // For each community case, use the working R value and add it to the total number of new community cases
-                            newCommunityCases += workingRValue;
+                            // For each community case, add cases to the delay (2 weeks until test shows positive)
+                            newCaseDelayArray[13] += workingRValue;
                         }
                     }
                 }
-                borderCases = importedCases; // Adds imported cases to border case count
 
+                // 1 in (passengersEntering) chance of having a community case outbreak with closed borders
                 if (Scripts.RandomNumber(passengersEntering) == 1)
                 {
-                    communityCases++; // 1 in (passengersEntering) chance of having a community case outbreak with closed borders
+                    newCommunityCases++;
                 }
             }
             else // Runs when borders are opened
@@ -181,26 +192,46 @@ namespace NZVirusSimulator
                 {
                     for (int i = 1; i <= communityCases; i++) // Variable 'i' can be 1 because community cases are greater than 0
                     {
-                        // For each community case, use the working R value and add it to the total number of new community cases
-                        newCommunityCases += workingRValue;
+                        // For each community case, add cases to the delay (2 weeks until test shows positive)
+                        newCaseDelayArray[13] += workingRValue;
                     }
                 }
                 newCommunityCases += importedCases; // Imported cases count as community cases with open borders
                 maxImported++; // Increase maxImported cases possibility if borders are open
             }
 
-            
+            // Add new community cases from delay array
+            newCommunityCases += newCaseDelayArray[0];
 
-            // Code from Microsoft Docs Math.Round (https://docs.microsoft.com/en-us/dotnet/api/system.math.round?view=net-5.0)
-            borderCases = Math.Round(borderCases, 0, MidpointRounding.ToNegativeInfinity); // Rounds number down to a whole person
+            // Round case values down
+            // **Code from Microsoft Docs Math.Round (https://docs.microsoft.com/en-us/dotnet/api/system.math.round?view=net-5.0)**
+            importedCases = Math.Round(importedCases, 0, MidpointRounding.ToNegativeInfinity); // Rounds number down to a whole person
             newCommunityCases = Math.Round(newCommunityCases, 0, MidpointRounding.ToNegativeInfinity); // Rounds number down to a whole person
 
+            /* Add new community cases, total cases, set casesOnDay[13] variable to today's cases, active cases, 
+            closed cases, deaths, recoveries, and population decrease */
             communityCases += newCommunityCases; // Add new community cases to community case count
 
-            totalCases = borderCases + communityCases; // Sum for total cases
+            // Conditional statement that changes totalCases equation based on border status
+            if (bordersClosed)
+            {
+                totalCases = importedCases + communityCases; // Sum for total cases
+            }
+            else
+            {
+                totalCases = communityCases;
+            }
+            casesOnDay[13] = newCommunityCases; // Add community cases to new cases on this day
+            activeCases += newCommunityCases; // New cases for today get added onto activeCases (Not using newCommunityCases because those only count for community cases and not border cases when borders are closed)
+            activeCases -= casesOnDay[0]; // Remove cases from active cases if it has been 14 days
+            closedCases += casesOnDay[0]; // Adds all cases that have finished their 14 days to closedCases variable
+            newDeaths = casesOnDay[0] * fatalityRate / 100; // New deaths equal cases after 14 days multiplied by the fatality rate divided by 100 to get a calculatable percentage
+            newDeaths = Math.Round(newDeaths, 0, MidpointRounding.ToNegativeInfinity);
+            deaths += newDeaths; // Add new deaths to total deaths
+            population -= newDeaths; // Remove newDeaths from population
+            recoveredCases += casesOnDay[0] - newDeaths; // Recovered cases equal cases after 14 days minus the death toll of the day
 
-            casesOnDay[13] = Convert.ToInt32(newCommunityCases); // Add community cases to new cases on this day
-
+            // Check if game is over
             if (activeCases >= population)
             {
                 gameRunning = false; // Stop simulation loop
@@ -213,13 +244,6 @@ namespace NZVirusSimulator
             }
             else
             {
-                activeCases += casesOnDay[13]; // New cases for today get added onto activeCases (Not using newCommunityCases because those only count for community cases and not border cases when borders are closed)
-                activeCases -= casesOnDay[0]; // Remove cases from active cases if it has been 14 days
-                closedCases += casesOnDay[0]; // Adds all cases that have finished their 14 days to closedCases variable
-                newDeaths = casesOnDay[0] * fatalityRate / 100; // New deaths equal cases after 14 days multiplied by the fatality rate divided by 100 to get a calculatable percentage
-                deaths += newDeaths; // Add new deaths to total deaths
-                population -= newDeaths; // Remove newDeaths from population
-                recoveredCases += casesOnDay[0] - newDeaths; // Recovered cases equal cases after 14 days minus the death toll of the day
                 fourteenDayIncrement++; // Incements the fourteenDayIncrement variable which is used at the beginning to check if it has been 14 days, and if so cases will either recover or die
                 day++; // Increment day if sim not finished
             }
