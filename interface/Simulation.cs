@@ -6,34 +6,46 @@ namespace NZVirusSimulator
 {
     class Simulation
     {
-        // Init global variables
+        /* 
+         *  INIT GLOBAL VARIABLES
+         */
+
+        // Virus information
         public static string virusName = "SARS-CoV 2";
         public static double rValue = 2.4; // COVID-19 R-Value
         public static double workingRValue = rValue; // Changed to reduce transmissions
         public static double fatalityRate = 3.4; // 3.4%
-        public static int maxImported = 2; // Random number generator starts at 1 so this avoids any initial errors | This value will increase without border control
-        public static double importedCases = 0;
-        public static int day = 0;
+
+        // Government information
         public static double budget = 5000000000; // Base budget of 5 billion
+        public static int passengersEntering = 300; // Used to determine how many passengers are entering NZ per day
+        public static double vaccinations = 0; // Total vaccination count
         public static int alertLevel = 1;
         public static double population = 4917000; // Population of New Zealand
         public static bool bordersClosed = false; // When the borders are open, max imported cases will increase
+        public static bool isolationEnforced = false; // Boolean used to check if isolation is enforced
+
+        // Game information
         public static bool finishSuccess = false; // False = Fail (Everyone dead), True = Herd Immunity (Everyone vaccinated)
-        public static bool gameRunning = true;
-        public static double newDeaths = 0;
-        public static double deaths = 0;
-        public static double totalCases = 0;
-        public static double activeCases = 0;
-        public static double closedCases = 0;
-        public static double communityCases = 0;
-        public static double newCommunityCases = 0;
-        public static double recoveredCases = 0;
-        public static double vaccinations = 0;
-        public static int passengersEntering = 300;
-        public static bool isolationEnforced = false;
-        public static double[] casesOnDay = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
-        public static double[] newCaseDelayArray = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
-        public static int fourteenDayIncrement = 0;
+        public static bool gameRunning = true; // Boolean used to stop the game when a result is given
+        public static int day = 0;
+
+        // Case/Death/Recovery information
+        public static double importedCases = 0;
+        public static int maxImported = 2; // Random number generator starts at 1 so this avoids any initial errors | This value will increase without border control
+        public static double newDeaths = 0; // Variable to count new deaths for the day
+        public static double deaths = 0; // Total death count
+        public static double totalCases = 0; // Total case count
+        public static double activeCases = 0; // Current active cases (cases removed from this variable after 14 days)
+        public static double closedCases = 0; // Total closed cases (deaths and recoveries)
+        public static double communityCases = 0; // Total community cases ever
+        public static double newCommunityCases = 0; // New community cases for the day
+        public static double recoveredCases = 0; // Total recovery count
+
+        // Case delay and data arrays
+        public static double[] casesOnDay = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }; // Used to calculate activeCases, recoveredCases, and deaths. New community cases are added to the [13] place in the array. They move down the array until 0. [0] place cases are subtracted from activeCases.
+        public static double[] newCaseDelayArray = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }; // Used to add newCommunityCases only after 14 days due to infection taking place after 14 days.
+
 
         // Resets all variables back to default values
         public static void ResetDefaults()
@@ -244,7 +256,6 @@ namespace NZVirusSimulator
             }
             else
             {
-                fourteenDayIncrement++; // Incements the fourteenDayIncrement variable which is used at the beginning to check if it has been 14 days, and if so cases will either recover or die
                 day++; // Increment day if sim not finished
             }
         }
