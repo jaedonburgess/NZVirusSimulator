@@ -20,16 +20,20 @@ namespace NZVirusSimulator
         public static bool bordersClosed = false; // When the borders are open, max imported cases will increase
         public static bool finishSuccess = false; // False = Fail (Everyone dead), True = Herd Immunity (Everyone vaccinated)
         public static bool gameRunning = true;
+        public static double newDeaths = 0;
         public static double deaths = 0;
         public static double totalCases = 0;
         public static double activeCases = 0;
+        public static double closedCases = 0;
         public static double borderCases = 0;
         public static double communityCases = 0;
         public static double newCommunityCases = 0;
+        public static double recoveredCases = 0;
         public static double vaccinations = 0;
         public static int passengersEntering = 300;
         public static bool isolationEnforced = false;
         public static int[] casesOnDay = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+        public static int fourteenDayIncrement = 0;
 
         // Resets all variables back to default values
         public static void ResetDefaults()
@@ -99,13 +103,26 @@ namespace NZVirusSimulator
             Console.WriteLine("News: {0}", Headline());
             Console.WriteLine("----------------------------------------------------------");
             Console.WriteLine();
+            Console.WriteLine("--------------------------");
             Console.WriteLine("Total Cases: {0}", totalCases);
+            Console.WriteLine("Total Deaths: {0}", deaths);
+            Console.WriteLine("Closed Cases: {0}", closedCases);
+            Console.WriteLine("Recovered Cases: {0}", recoveredCases);
             Console.WriteLine("Active Cases: {0}", activeCases);
+            Console.WriteLine("--------------------------");
             Console.WriteLine("New Community Cases: {0}", newCommunityCases);
+            Console.WriteLine("New Deaths: {0}", newDeaths);
+            Console.WriteLine("--------------------------");
             Console.WriteLine("Community Cases: {0}", totalCases);
             Console.WriteLine("Imported Cases: {0}", importedCases);
-            Console.WriteLine("Transmissibility: {0}", rValue);
+            Console.WriteLine("--------------------------");
+            Console.WriteLine("Transmissibility: {0}", workingRValue);
+            Console.WriteLine("Fatality Rate: {0}", fatalityRate);
+            Console.WriteLine("--------------------------");
+            Console.WriteLine("Population: {0}", population);
             Console.WriteLine("Budget: ${0}", budget);
+            Console.WriteLine("--------------------------");
+
         }
 
         public static string Headline()
@@ -121,6 +138,7 @@ namespace NZVirusSimulator
 
         public static void Simulate()
         {
+
             // Move active cases down a step in the array
             for (int i = 1; i <= 13; i++) // Starts at 1 because there are no days before 0 so no point removing
             {
@@ -183,7 +201,7 @@ namespace NZVirusSimulator
 
             casesOnDay[13] = Convert.ToInt32(newCommunityCases); // Add community cases to new cases on this day
 
-            if (totalCases >= population)
+            if (activeCases >= population)
             {
                 gameRunning = false; // Stop simulation loop
                 finishSuccess = false; // Player did not succeed
@@ -195,9 +213,14 @@ namespace NZVirusSimulator
             }
             else
             {
-                activeCases += casesOnDay[13];
+                activeCases += casesOnDay[13]; // New cases for today get added onto activeCases (Not using newCommunityCases because those only count for community cases and not border cases when borders are closed)
                 activeCases -= casesOnDay[0]; // Remove cases from active cases if it has been 14 days
-                activeCases -= deaths;
+                closedCases += casesOnDay[0]; // Adds all cases that have finished their 14 days to closedCases variable
+                newDeaths = casesOnDay[0] * fatalityRate / 100; // New deaths equal cases after 14 days multiplied by the fatality rate divided by 100 to get a calculatable percentage
+                deaths += newDeaths; // Add new deaths to total deaths
+                population -= newDeaths; // Remove newDeaths from population
+                recoveredCases += casesOnDay[0] - newDeaths; // Recovered cases equal cases after 14 days minus the death toll of the day
+                fourteenDayIncrement++; // Incements the fourteenDayIncrement variable which is used at the beginning to check if it has been 14 days, and if so cases will either recover or die
                 day++; // Increment day if sim not finished
             }
         }
