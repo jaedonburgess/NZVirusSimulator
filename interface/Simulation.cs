@@ -33,7 +33,8 @@ namespace NZVirusSimulator
         public static int day = 0;
 
         // Case/Death/Recovery information
-        public static double importedCases = 0;
+        public static double importedCases = 0; // Total imported cases
+        public static double newImportedCases = 0; // New imported cases
         public static int maxImported = 2; // Random number generator starts at 1 so this avoids any initial errors | This value will increase without border control
         public static double newDeaths = 0; // Variable to count new deaths for the day
         public static double deaths = 0; // Total death count
@@ -58,7 +59,7 @@ namespace NZVirusSimulator
             workingRValue = 2.25; // Changed to reduce transmissions
             fatalityRate = 0.34; // 34%
             maxImported = 2; // Random number generator starts at 1 so this avoids any initial errors | This value will increase without border control
-            importedCases = Scripts.RandomNumber(maxImported);
+            newImportedCases = Scripts.RandomNumber(maxImported);
             day = 0;
             budget = 5000000000; // Base budget of 5 billion
         }
@@ -66,11 +67,6 @@ namespace NZVirusSimulator
         // Start the simulation
         public static void Start(bool simulate)
         {
-            /*
-             * WORK ON ACTIVE CASE CALUCLATION W/ BORDER CASES
-             */
-
-
             // Run simulation while gameRunning is true
             while (gameRunning)
             {
@@ -135,7 +131,7 @@ namespace NZVirusSimulator
             Console.WriteLine("Active Cases: {0}", activeCases);
             Console.WriteLine("Community Cases: {0}", totalCases);
             Console.WriteLine("--------------------------");
-            Console.WriteLine("New Imported Cases: {0}", importedCases);
+            Console.WriteLine("New Imported Cases: {0}", newImportedCases);
             Console.WriteLine("New Community Cases: {0}", newCommunityCases);
             Console.WriteLine("New Deaths: {0}", newDeaths);
             Console.WriteLine("--------------------------");
@@ -245,7 +241,7 @@ namespace NZVirusSimulator
             }
 
             // Get daily imported cases with random number generator
-            importedCases = Scripts.RandomNumber(maxImported);
+            newImportedCases = Scripts.RandomNumber(maxImported);
 
             // Runs conditional statements to find new cases depending on border and/or isolation conditions
             /* For Each Ranges OR Iterating using a for
@@ -280,7 +276,7 @@ namespace NZVirusSimulator
                         newCaseDelayArray[13] += workingRValue;
                     }
                 }
-                newCommunityCases += importedCases; // Imported cases count as community cases with open borders
+                newCommunityCases += newImportedCases; // Imported cases count as community cases with open borders
                 maxImported++; // Increase maxImported cases possibility if borders are open
             }
 
@@ -289,7 +285,7 @@ namespace NZVirusSimulator
 
             // Round case values down
             // **Code from Microsoft Docs Math.Round (https://docs.microsoft.com/en-us/dotnet/api/system.math.round?view=net-5.0)**
-            importedCases = Math.Round(importedCases, 0, MidpointRounding.ToNegativeInfinity); // Rounds number down to a whole person
+            newImportedCases = Math.Round(newImportedCases, 0, MidpointRounding.ToNegativeInfinity); // Rounds number down to a whole person
             newCommunityCases = Math.Round(newCommunityCases, 0, MidpointRounding.ToNegativeInfinity); // Rounds number down to a whole person
 
             /* Add new community cases, total cases, set casesOnDay[13] variable to today's cases, active cases, 
@@ -297,16 +293,18 @@ namespace NZVirusSimulator
             communityCases += newCommunityCases; // Add new community cases to community case count
 
             // Conditional statement that changes totalCases equation based on border status
+            // (Because imported cases count as community cases when the borders are open, a different calculation is required for closed borders)
             if (bordersClosed)
             {
-                totalCases = importedCases + communityCases; // Sum for total cases
+                totalCases += newImportedCases + newCommunityCases; // Sum for total cases
+                activeCases += newImportedCases + newCommunityCases; // New cases for today get added onto activeCases
             }
             else
             {
-                totalCases = communityCases;
+                activeCases += newCommunityCases;
+                totalCases += newCommunityCases;
             }
-            casesOnDay[13] = newCommunityCases; // Add community cases to new cases on this day
-            activeCases += newCommunityCases; // New cases for today get added onto activeCases (Not using newCommunityCases because those only count for community cases and not border cases when borders are closed)
+            casesOnDay[13] = newCommunityCases; // Add community cases to new cases on this da
             activeCases -= casesOnDay[0]; // Remove cases from active cases if it has been 14 days
             closedCases += casesOnDay[0]; // Adds all cases that have finished their 14 days to closedCases variable
             newDeaths = casesOnDay[0] * fatalityRate / 100; // New deaths equal cases after 14 days multiplied by the fatality rate divided by 100 to get a calculatable percentage
