@@ -21,6 +21,7 @@ namespace NZVirusSimulator
         public static double budget = 5000000000; // Base budget of 5 billion
         public static int passengersEntering = 300; // Used to determine how many passengers are entering NZ per day
         public static double vaccinations = 0; // Total vaccination count
+        public static double newVaccinations = 0; // New vaccination count
         public static int alertLevel = 1;
         public static double population = 4917000; // Population of New Zealand
         public static bool bordersClosed = false; // When the borders are open, max imported cases will increase
@@ -63,12 +64,12 @@ namespace NZVirusSimulator
         }
 
         // Start the simulation
-        public static void Start()
+        public static void Start(bool simulate)
         {
             // Run simulation while gameRunning is true
             while (gameRunning)
             {
-                Draw(true);
+                Draw(simulate);
 
                 if (gameRunning) // Makes sure the continue feature doesn't run again if the simulation wins or fails
                 {
@@ -111,6 +112,7 @@ namespace NZVirusSimulator
             {
                 Simulate(); // Start simulation
             }
+
             Console.Clear();
             Scripts.DrawTitle("Simulation");
             Console.WriteLine("Simulating Day {0}", day);
@@ -134,7 +136,12 @@ namespace NZVirusSimulator
             Console.WriteLine("Transmissibility: {0}", workingRValue);
             Console.WriteLine("Fatality Rate: {0}", fatalityRate);
             Console.WriteLine("--------------------------");
+            Console.WriteLine("Vaccinations: {0}", vaccinations);
+            Console.WriteLine("New Vaccinations: {0}", newVaccinations);
+            Console.WriteLine("--------------------------");
             Console.WriteLine("Population: {0}", population);
+            Console.WriteLine("Alert Level: {0}", alertLevel);
+            Console.WriteLine("Borders Closed: {0}", bordersClosed);
             Console.WriteLine("Budget: ${0}", budget);
             Console.WriteLine("--------------------------");
             govOptions(); // Draw the government options/interventions to the screen
@@ -174,6 +181,8 @@ namespace NZVirusSimulator
             switch (option)
             {
                 case 1:
+                    Scripts.DrawTitle("Simulation");
+                    break;
                 case 2:
                 case 3:
                 case 4:

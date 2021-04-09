@@ -49,7 +49,7 @@ namespace NZVirusSimulator
             switch (option)
             {
                 case 1:
-                    Simulation.Start();
+                    Simulation.Start(true); // Starts simulation application and runs algorithm (true)
                     break;
                 case 2:
                     Settings.Start();
