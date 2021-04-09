@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading;
 
 namespace NZVirusSimulator
 {
@@ -59,7 +60,6 @@ namespace NZVirusSimulator
             importedCases = Scripts.RandomNumber(maxImported);
             day = 0;
             budget = 5000000000; // Base budget of 5 billion
-
         }
 
         // Start the simulation
@@ -68,7 +68,7 @@ namespace NZVirusSimulator
             // Run simulation while gameRunning is true
             while (gameRunning)
             {
-                Draw();
+                Draw(true);
 
                 if (gameRunning) // Makes sure the continue feature doesn't run again if the simulation wins or fails
                 {
@@ -103,10 +103,14 @@ namespace NZVirusSimulator
             Scripts.MenuReturn(); // Returns to main menu after pressing enter
         }
 
+
         // Draw interface and results of simulation
-        public static void Draw()
+        public static void Draw(bool simulate)
         {
-            Simulate(); // Start simulation
+            if (simulate) // If the draw function is asked to simulate, the simulator will run
+            {
+                Simulate(); // Start simulation
+            }
             Console.Clear();
             Scripts.DrawTitle("Simulation");
             Console.WriteLine("Simulating Day {0}", day);
@@ -121,10 +125,9 @@ namespace NZVirusSimulator
             Console.WriteLine("Closed Cases: {0}", closedCases);
             Console.WriteLine("Recovered Cases: {0}", recoveredCases);
             Console.WriteLine("Active Cases: {0}", activeCases);
-            Console.WriteLine("--------------------------");
             Console.WriteLine("Community Cases: {0}", totalCases);
-            Console.WriteLine("Imported Cases: {0}", importedCases);
             Console.WriteLine("--------------------------");
+            Console.WriteLine("New Imported Cases: {0}", importedCases);
             Console.WriteLine("New Community Cases: {0}", newCommunityCases);
             Console.WriteLine("New Deaths: {0}", newDeaths);
             Console.WriteLine("--------------------------");
@@ -134,9 +137,61 @@ namespace NZVirusSimulator
             Console.WriteLine("Population: {0}", population);
             Console.WriteLine("Budget: ${0}", budget);
             Console.WriteLine("--------------------------");
-
+            govOptions(); // Draw the government options/interventions to the screen
         }
 
+        public static void govOptions()
+        {
+            Console.WriteLine();
+            Console.WriteLine("--------------------------");
+            Console.WriteLine(" Government Interventions ");
+            Console.WriteLine(" 1: Border Condition      ");
+            Console.WriteLine(" 2: Isolation Enforcement ");
+            Console.WriteLine(" 3: Alert Level           ");
+            Console.WriteLine(" 4: Vaccines              ");
+            Console.WriteLine(" 5: Continue              ");
+            Console.WriteLine("--------------------------");
+
+            /*
+             * Options
+             */
+
+            // Variables
+            int option = 0;
+
+            // Read option
+            while (option == 0)
+            {
+                Console.WriteLine("Please enter an option: ");
+                option = Scripts.ReadInt();
+                if (option == Scripts.intError)
+                {
+                    break;
+                }
+            }
+
+            // Act on the entered option
+            switch (option)
+            {
+                case 1:
+                case 2:
+                case 3:
+                case 4:
+                    Console.WriteLine("Error: This option is not available [Please Wait...]");
+                    Thread.Sleep(2000);
+                    Draw(false);
+                    break;
+                case 5:
+                    break;
+                default:
+                    Console.WriteLine("Error: Please enter a valid option [Please Wait...]");
+                    Thread.Sleep(2000); 
+                    Draw(false);
+                    break;
+            }
+        }
+
+        // Display headline based on case, death, vaccine or day information
         public static string Headline()
         {
             if (day == 0)
@@ -150,6 +205,8 @@ namespace NZVirusSimulator
         // Virus simulator algorithm
         public static void Simulate()
         {
+            newCommunityCases = 0; // Reset new cases at the end of the simulated day
+
             // Move active cases down a step in the array
             for (int i = 1; i <= 13; i++) // Starts at 1 because there are no days before 0 so no point removing
             {

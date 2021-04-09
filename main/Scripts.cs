@@ -45,9 +45,6 @@ namespace NZVirusSimulator
             MainMenu.Draw();
         }
 
-        
-        
-
         // Read a string value
         public static string ReadString()
         {
