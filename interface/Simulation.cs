@@ -66,6 +66,11 @@ namespace NZVirusSimulator
         // Start the simulation
         public static void Start(bool simulate)
         {
+            /*
+             * WORK ON ACTIVE CASE CALUCLATION W/ BORDER CASES
+             */
+
+
             // Run simulation while gameRunning is true
             while (gameRunning)
             {
@@ -79,6 +84,7 @@ namespace NZVirusSimulator
                     Console.WriteLine(" Press enter to continue to next day...");
                     Console.WriteLine("---------------------------------------");
                     Console.ReadLine();
+                    simulate = true; // Reset simulate bool if govIntervention method was used
                 } 
                 else
                 {
@@ -150,14 +156,14 @@ namespace NZVirusSimulator
         public static void govOptions()
         {
             Console.WriteLine();
-            Console.WriteLine("--------------------------");
-            Console.WriteLine(" Government Interventions ");
-            Console.WriteLine(" 1: Border Condition      ");
-            Console.WriteLine(" 2: Isolation Enforcement ");
-            Console.WriteLine(" 3: Alert Level           ");
-            Console.WriteLine(" 4: Vaccines              ");
-            Console.WriteLine(" 5: Continue              ");
-            Console.WriteLine("--------------------------");
+            Console.WriteLine(" --------------------------");
+            Console.WriteLine("| Government Interventions |");
+            Console.WriteLine("| 1: Border Condition      |");
+            Console.WriteLine("| 2: Isolation Enforcement |");
+            Console.WriteLine("| 3: Alert Level           |");
+            Console.WriteLine("| 4: Vaccines              |");
+            Console.WriteLine("| 5: Continue              |");
+            Console.WriteLine(" --------------------------");
 
             /*
              * Options
@@ -181,7 +187,7 @@ namespace NZVirusSimulator
             switch (option)
             {
                 case 1:
-                    Scripts.DrawTitle("Simulation");
+                    BorderState.Start(); // Run border state mini application
                     break;
                 case 2:
                 case 3:

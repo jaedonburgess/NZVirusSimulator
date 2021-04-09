@@ -32,17 +32,15 @@ namespace NZVirusSimulator
             //Init variables
             int option = 0;
 
-            //Read option
-            Console.Write("Please enter an option: ");
-            try
+            // Read option
+            while (option == 0)
             {
-                option = Int32.Parse(Console.ReadLine());
-            }
-            catch
-            {
-                Console.WriteLine("Error: Please enter a postive whole integer [Please wait...]");
-                Thread.Sleep(2000);
-                Draw();
+                Console.WriteLine("Please enter an option: ");
+                option = Scripts.ReadInt();
+                if (option == Scripts.intError)
+                {
+                    break;
+                }
             }
 
             //Checks through options to execute valid options and reset invalid options
