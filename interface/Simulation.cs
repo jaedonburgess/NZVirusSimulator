@@ -28,7 +28,7 @@ namespace NZVirusSimulator
         public static bool isolationEnforced = false; // Boolean used to check if isolation is enforced
 
         // Game information
-        public static bool finishSuccess = false; // False = Fail (Everyone dead), True = Herd Immunity (Everyone vaccinated)
+        public static string finishSuccess = ""; // "money" - You ran out of money | "herd_infection" - Everyone is infected | "vaccinated" - Everyone is vaccinated (success)
         public static bool gameRunning = true; // Boolean used to stop the game when a result is given
         public static int day = 0;
 
@@ -71,35 +71,31 @@ namespace NZVirusSimulator
             while (gameRunning)
             {
                 Draw(simulate);
+                simulate = true; // Reset simulate bool if govIntervention method was used
 
-                if (gameRunning) // Makes sure the continue feature doesn't run again if the simulation wins or fails
-                {
-                    // When enter is pressed, the user continues on to the next day of the simulation
-                    Console.WriteLine();
-                    Console.WriteLine("---------------------------------------");
-                    Console.WriteLine(" Press enter to continue to next day...");
-                    Console.WriteLine("---------------------------------------");
-                    Console.ReadLine();
-                    simulate = true; // Reset simulate bool if govIntervention method was used
-                } 
-                else
-                {
-                    break;
-                }
             }
 
             // Clear console before final message
             Console.Clear();
             Scripts.DrawTitle("Simulation");
 
-            // Depending on success a different message will be displayed (Will change to headline eventually)
-            if (finishSuccess)
+            // Depending on success a different message will be displayed
+            if (finishSuccess == "vaccinated")
             {
                 Console.WriteLine("Congratulations, you succeeded!");
             }
-            else
+            else if (finishSuccess == "herd_infection")
             {
                 Console.WriteLine("Congratulations, you failed! Everyone got '{0}'!", virusName);
+            }
+            else if (finishSuccess == "money")
+            {
+                Console.WriteLine("Congratulations, you failed! You ran out of money.");
+            }
+            else
+            {
+                Console.WriteLine("Congratulations, you failed!");
+
             }
 
 
@@ -146,7 +142,11 @@ namespace NZVirusSimulator
             Console.WriteLine("Borders Closed: {0}", bordersClosed);
             Console.WriteLine("Budget: ${0}", budget);
             Console.WriteLine("--------------------------");
-            govOptions(); // Draw the government options/interventions to the screen
+            // Run so that the simulation ends if the cases, budget, or vaccination count causes the game to end without running through the govOptions again
+            if (gameRunning)
+            {
+                govOptions(); // Draw the government options/interventions to the screen
+            }
         }
 
         public static void govOptions()
@@ -265,6 +265,8 @@ namespace NZVirusSimulator
                 {
                     newCommunityCases++;
                 }
+
+                budget -= 5000000; // 5 million dollar reduction for each day while borders are closed
             }
             else // Runs when borders are opened
             {
@@ -317,12 +319,17 @@ namespace NZVirusSimulator
             if (activeCases >= population)
             {
                 gameRunning = false; // Stop simulation loop
-                finishSuccess = false; // Player did not succeed
+                finishSuccess = "herd_infection"; // Player did not succeed (everyone infected)
             }
             else if (vaccinations >= population)
             {
                 gameRunning = false; // Stop simulation loop
-                finishSuccess = true; // Player succeeded
+                finishSuccess = "vaccinated"; // Player succeeded
+            }
+            else if (budget <= 0)
+            {
+                gameRunning = false; // Stop simulation loop
+                finishSuccess = "money"; // Player failed (ran out of money)
             }
             else
             {

@@ -58,7 +58,10 @@ namespace NZVirusSimulator
                     Draw();
                     break;
                 case 4:
+                    // *EXITING A C# APPLICATION PROPERLY*
+                    // https://stackoverflow.com/questions/12977924/how-to-properly-exit-a-c-sharp-application
                     Console.Clear();
+                    Environment.Exit(0); // Error Code: 0 = Application ran successfully
                     break;
                 default:
                     Console.WriteLine("Error: Please enter a valid option [Please Wait...]");
