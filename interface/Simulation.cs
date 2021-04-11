@@ -125,7 +125,8 @@ namespace NZVirusSimulator
             Console.WriteLine("Closed Cases: {0}", closedCases);
             Console.WriteLine("Recovered Cases: {0}", recoveredCases);
             Console.WriteLine("Active Cases: {0}", activeCases);
-            Console.WriteLine("Community Cases: {0}", totalCases);
+            Console.WriteLine("Community Cases: {0}", communityCases);
+            Console.WriteLine("Imported/Border Cases: {0}", importedCases);
             Console.WriteLine("--------------------------");
             Console.WriteLine("New Imported Cases: {0}", newImportedCases);
             Console.WriteLine("New Community Cases: {0}", newCommunityCases);
@@ -285,15 +286,16 @@ namespace NZVirusSimulator
             // Add new community cases from delay array
             newCommunityCases += newCaseDelayArray[0];
 
-            // Round case values down
+            // Round case values down (Must happen after newCommunityCases and newImportedCases are calculated for rValue to work)
             // **Code from Microsoft Docs Math.Round (https://docs.microsoft.com/en-us/dotnet/api/system.math.round?view=net-5.0)**
             newImportedCases = Math.Round(newImportedCases, 0, MidpointRounding.ToNegativeInfinity); // Rounds number down to a whole person
             newCommunityCases = Math.Round(newCommunityCases, 0, MidpointRounding.ToNegativeInfinity); // Rounds number down to a whole person
 
+            //---------------------------------------------------------------------------------------------------------
             /* Add new community cases, total cases, set casesOnDay[13] variable to today's cases, active cases, 
             closed cases, deaths, recoveries, and population decrease */
-            communityCases += newCommunityCases; // Add new community cases to community case count
 
+            communityCases += newCommunityCases; // Add new community cases to community case count
             // Conditional statement that changes totalCases equation based on border status
             // (Because imported cases count as community cases when the borders are open, a different calculation is required for closed borders)
             if (bordersClosed)
@@ -306,14 +308,18 @@ namespace NZVirusSimulator
                 activeCases += newCommunityCases;
                 totalCases += newCommunityCases;
             }
+
             casesOnDay[13] = newCommunityCases; // Add community cases to new cases on this da
             activeCases -= casesOnDay[0]; // Remove cases from active cases if it has been 14 days
+            importedCases += newImportedCases; // Adds newImportedCases to the total importedCases count
             closedCases += casesOnDay[0]; // Adds all cases that have finished their 14 days to closedCases variable
             newDeaths = casesOnDay[0] * fatalityRate / 100; // New deaths equal cases after 14 days multiplied by the fatality rate divided by 100 to get a calculatable percentage
             newDeaths = Math.Round(newDeaths, 0, MidpointRounding.ToNegativeInfinity);
             deaths += newDeaths; // Add new deaths to total deaths
             population -= newDeaths; // Remove newDeaths from population
             recoveredCases += casesOnDay[0] - newDeaths; // Recovered cases equal cases after 14 days minus the death toll of the day
+
+            //---------------------------------------------------------------------------------------------------------
 
             // Check if game is over
             if (activeCases >= population)
