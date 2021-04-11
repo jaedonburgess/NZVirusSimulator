@@ -73,12 +73,24 @@ namespace NZVirusSimulator
                     {
                         Simulation.bordersClosed = true; // Sets border state to closed
                         Simulation.budget -= 2000000000; // Costs 2 billion to close the borders
+                        Simulation.expenses += 5000000; // 5 million dollar reduction for each day while borders are closed
                         Draw();
                     }
                     break;
                 case 2:
-                    Simulation.bordersClosed = false; // Sets border state to open
-                    Draw();
+                    // Makes sure player doesn't accidentally get expenses into negatives by opening an already open border
+                    if (Simulation.bordersClosed == false)
+                    {
+                        Console.WriteLine("The borders are already open! [Please wait...]");
+                        Thread.Sleep(2000);
+                        Draw();
+                    }
+                    else
+                    {
+                        Simulation.bordersClosed = false; // Sets border state to closed
+                        Simulation.expenses -= 5000000; // Take the $5 million/day cost off of the expenses
+                        Draw();
+                    }
                     break;
                 case 3:
                     Simulation.Start(false); // Re-run loop within simulation without running algorithm

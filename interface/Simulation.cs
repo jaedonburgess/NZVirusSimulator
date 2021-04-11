@@ -13,16 +13,18 @@ namespace NZVirusSimulator
 
         // Virus information
         public static string virusName = "SARS-CoV 2";
-        public static double rValue = 2.4; // COVID-19 R-Value
+        public static double rValue = 2.25; // COVID-19 R-Value
         public static double workingRValue = rValue; // Changed to reduce transmissions
         public static double fatalityRate = 3.4; // 3.4%
 
         // Government information
         public static double budget = 5000000000; // Base budget of 5 billion
+        public static double expenses = 0; // Total expenses
         public static int passengersEntering = 300; // Used to determine how many passengers are entering NZ per day
         public static double vaccinations = 0; // Total vaccination count
         public static double newVaccinations = 0; // New vaccination count
         public static int alertLevel = 1;
+        public static double alertLevelExpenses = 0; // Expenses specifically for alert level changes
         public static double population = 4917000; // Population of New Zealand
         public static bool bordersClosed = false; // When the borders are open, max imported cases will increase
         public static bool isolationEnforced = false; // Boolean used to check if isolation is enforced (For Level 4 elimination)
@@ -53,26 +55,49 @@ namespace NZVirusSimulator
         // Resets all variables back to default values
         public static void ResetDefaults()
         {
-            // Default variable values
             virusName = "SARS-CoV 2";
             rValue = 2.25; // COVID-19 R-Value
-            workingRValue = 2.25; // Changed to reduce transmissions
-            fatalityRate = 0.34; // 34%
-            maxImported = 2; // Random number generator starts at 1 so this avoids any initial errors | This value will increase without border control
-            newImportedCases = Scripts.RandomNumber(maxImported);
-            day = 0;
+            workingRValue = rValue; // Changed to reduce transmissions
+            fatalityRate = 3.4; // 3.4%
             budget = 5000000000; // Base budget of 5 billion
+            passengersEntering = 300; // Used to determine how many passengers are entering NZ per day
+            vaccinations = 0; // Total vaccination count
+            newVaccinations = 0; // New vaccination count
+            alertLevel = 1;
+            population = 4917000; // Population of New Zealand
+            bordersClosed = false; // When the borders are open, max imported cases will increase
+            isolationEnforced = false; // ean used to check if isolation is enforced (For Level 4 elimination)
+            finishSuccess = ""; // "money" - You ran out of money | "herd_infection" - Everyone is infected | "vaccinated" - Everyone is vaccinated (success)
+            gameRunning = true; // ean used to stop the game when a result is given
+            day = 0;
+            importedCases = 0; // Total imported cases
+            newImportedCases = 0; // New imported cases
+            maxImported = 2; // Random number generator starts at 1 so this avoids any initial errors | This value will increase without border control
+            newDeaths = 0; // Variable to count new deaths for the day
+            deaths = 0; // Total death count
+            totalCases = 0; // Total case count
+            activeCases = 0; // Current active cases (cases removed from this variable after 14 days)
+            closedCases = 0; // Total closed cases (deaths and recoveries)
+            communityCases = 0; // Total community cases ever
+            newCommunityCases = 0; // New community cases for the day
+            recoveredCases = 0; // Total recovery count
+            
+            // Reset arrays
+            for (int i = 0; i <= 13; i++)
+            {
+                casesOnDay[i] = 0;
+                newCaseDelayArray[i] = 0;
+            }
         }
 
-        // Start the simulation
-        public static void Start(bool simulate)
+    // Start the simulation
+    public static void Start(bool simulate)
         {
             // Run simulation while gameRunning is true
             while (gameRunning)
             {
                 Draw(simulate);
                 simulate = true; // Reset simulate bool if govIntervention method was used
-
             }
 
             // Clear console before final message
@@ -94,11 +119,11 @@ namespace NZVirusSimulator
             }
             else
             {
-                Console.WriteLine("Congratulations, you failed!");
+                Console.WriteLine("Simulation Canceled."); // Runs if sim gets cancelled by player
 
             }
 
-
+            ResetDefaults(); // Reset game upon completion
             Scripts.MenuReturn(); // Returns to main menu after pressing enter
         }
 
@@ -142,6 +167,7 @@ namespace NZVirusSimulator
             Console.WriteLine("Alert Level: {0}", alertLevel);
             Console.WriteLine("Borders Closed: {0}", bordersClosed);
             Console.WriteLine("Budget: ${0}", budget);
+            Console.WriteLine("Expenses: ${0}", expenses);
             Console.WriteLine("--------------------------");
             // Run so that the simulation ends if the cases, budget, or vaccination count causes the game to end without running through the govOptions again
             if (gameRunning)
@@ -159,6 +185,7 @@ namespace NZVirusSimulator
             Console.WriteLine("| 2: Alert Level           |");
             Console.WriteLine("| 3: Vaccines              |");
             Console.WriteLine("| 4: Continue              |");
+            Console.WriteLine("| 5: Cancel Simulation     |");
             Console.WriteLine(" --------------------------");
 
             /*
@@ -186,12 +213,17 @@ namespace NZVirusSimulator
                     BorderState.Start(); // Run border state mini application
                     break;
                 case 2:
+                    AlertLevel.Start(); // Run alert level mini application
+                    break;
                 case 3:
                     Console.WriteLine("Error: This option is not available [Please Wait...]");
                     Thread.Sleep(2000);
                     Draw(false);
                     break;
                 case 4:
+                    break;
+                case 5:
+                    gameRunning = false;
                     break;
                 default:
                     Console.WriteLine("Error: Please enter a valid option [Please Wait...]");
@@ -217,6 +249,24 @@ namespace NZVirusSimulator
         {
             newCommunityCases = 0; // Reset new cases at the end of the simulated day
 
+            // Enforce isolation to the fullest at level 4
+            if (alertLevel == 4)
+            {
+                isolationEnforced = true; // No transmission possible (unless the rare possibility of a passenger randomly brings the virus in takes hold)
+                workingRValue = 0; // Virus transmissibility is 0
+            }
+            else if (alertLevel == 3)
+            {
+                workingRValue = 0.1; // Reduces transimission to a significantly low point
+            }
+            else if (alertLevel == 2)
+            {
+                workingRValue = rValue / 2; // Halves the transmissibility of the virus
+            }
+            else
+            {
+                workingRValue = rValue; // Virus is as transimissible as possible
+            }
 
             // Array Stepper (Move delayed case counts/Move active case 'timer' array down a step)
             //---------------------------------------------------------------------------------------------------------
@@ -268,6 +318,10 @@ namespace NZVirusSimulator
                             newCaseDelayArray[13] += workingRValue;
                         }
                     }
+                    else // No transmission when isolation enforced (Level 4)
+                    {
+                        newCaseDelayArray[13] = 0;
+                    }
                 }
 
                 // 1 in (passengersEntering) chance of having a community case outbreak with closed borders
@@ -275,12 +329,10 @@ namespace NZVirusSimulator
                 {
                     newCommunityCases++;
                 }
-
-                budget -= 5000000; // 5 million dollar reduction for each day while borders are closed
             }
             else // Runs when borders are opened
             {
-                if (isolationEnforced == false) // Runs when borders are open and isolation is not enforced
+                if (isolationEnforced == false) // Runs when borders are open and isolation is not enforced ( < Level 4)
                 {
                     for (int i = 1; i <= communityCases; i++) // Variable 'i' can be 1 because community cases are greater than 0
                     {
@@ -288,6 +340,11 @@ namespace NZVirusSimulator
                         newCaseDelayArray[13] += workingRValue;
                     }
                 }
+                else // No transmission when isolation enforced (Level 4)
+                {
+                    newCaseDelayArray[13] = 0;
+                }
+
                 newCommunityCases += newImportedCases; // Imported cases count as community cases with open borders
             }
 
@@ -307,7 +364,7 @@ namespace NZVirusSimulator
 
             //---------------------------------------------------------------------------------------------------------
             /* Add new community cases, total cases, set casesOnDay[13] variable to today's cases, active cases, 
-            closed cases, deaths, recoveries, and population decrease */
+            closed cases, deaths, recoveries, population decrease and calculate budget changes */
 
             communityCases += newCommunityCases; // Add new community cases to community case count
             // Conditional statement that changes totalCases equation based on border status
@@ -332,6 +389,7 @@ namespace NZVirusSimulator
             deaths += newDeaths; // Add new deaths to total deaths
             population -= newDeaths; // Remove newDeaths from population
             recoveredCases += casesOnDay[0] - newDeaths; // Recovered cases equal cases after 14 days minus the death toll of the day
+            budget -= expenses;
 
             //---------------------------------------------------------------------------------------------------------
 
