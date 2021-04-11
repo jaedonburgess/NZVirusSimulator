@@ -25,7 +25,7 @@ namespace NZVirusSimulator
         public static int alertLevel = 1;
         public static double population = 4917000; // Population of New Zealand
         public static bool bordersClosed = false; // When the borders are open, max imported cases will increase
-        public static bool isolationEnforced = false; // Boolean used to check if isolation is enforced
+        public static bool isolationEnforced = false; // Boolean used to check if isolation is enforced (For Level 4 elimination)
 
         // Game information
         public static string finishSuccess = ""; // "money" - You ran out of money | "herd_infection" - Everyone is infected | "vaccinated" - Everyone is vaccinated (success)
@@ -156,10 +156,9 @@ namespace NZVirusSimulator
             Console.WriteLine(" --------------------------");
             Console.WriteLine("| Government Interventions |");
             Console.WriteLine("| 1: Border Condition      |");
-            Console.WriteLine("| 2: Isolation Enforcement |");
-            Console.WriteLine("| 3: Alert Level           |");
-            Console.WriteLine("| 4: Vaccines              |");
-            Console.WriteLine("| 5: Continue              |");
+            Console.WriteLine("| 2: Alert Level           |");
+            Console.WriteLine("| 3: Vaccines              |");
+            Console.WriteLine("| 4: Continue              |");
             Console.WriteLine(" --------------------------");
 
             /*
@@ -188,12 +187,11 @@ namespace NZVirusSimulator
                     break;
                 case 2:
                 case 3:
-                case 4:
                     Console.WriteLine("Error: This option is not available [Please Wait...]");
                     Thread.Sleep(2000);
                     Draw(false);
                     break;
-                case 5:
+                case 4:
                     break;
                 default:
                     Console.WriteLine("Error: Please enter a valid option [Please Wait...]");
@@ -219,6 +217,10 @@ namespace NZVirusSimulator
         {
             newCommunityCases = 0; // Reset new cases at the end of the simulated day
 
+
+            // Array Stepper (Move delayed case counts/Move active case 'timer' array down a step)
+            //---------------------------------------------------------------------------------------------------------
+
             // Move active cases down a step in the array
             for (int i = 1; i <= 13; i++) // Starts at 1 because there are no days before 0 so no point removing
             {
@@ -241,8 +243,15 @@ namespace NZVirusSimulator
                 newCaseDelayArray[i - 1] = movingValue;
             }
 
+            //---------------------------------------------------------------------------------------------------------
+
+
             // Get daily imported cases with random number generator
             newImportedCases = Scripts.RandomNumber(maxImported);
+
+
+            // Spread Calculator (How many newCommunityCases)
+            //---------------------------------------------------------------------------------------------------------
 
             // Runs conditional statements to find new cases depending on border and/or isolation conditions
             /* For Each Ranges OR Iterating using a for
@@ -280,8 +289,12 @@ namespace NZVirusSimulator
                     }
                 }
                 newCommunityCases += newImportedCases; // Imported cases count as community cases with open borders
-                maxImported++; // Increase maxImported cases possibility if borders are open
             }
+
+            //---------------------------------------------------------------------------------------------------------
+
+            // Increase maxImported cases possibility if borders are open
+            maxImported++;
 
             // Add new community cases from delay array
             newCommunityCases += newCaseDelayArray[0];
@@ -290,6 +303,7 @@ namespace NZVirusSimulator
             // **Code from Microsoft Docs Math.Round (https://docs.microsoft.com/en-us/dotnet/api/system.math.round?view=net-5.0)**
             newImportedCases = Math.Round(newImportedCases, 0, MidpointRounding.ToNegativeInfinity); // Rounds number down to a whole person
             newCommunityCases = Math.Round(newCommunityCases, 0, MidpointRounding.ToNegativeInfinity); // Rounds number down to a whole person
+
 
             //---------------------------------------------------------------------------------------------------------
             /* Add new community cases, total cases, set casesOnDay[13] variable to today's cases, active cases, 
@@ -309,7 +323,7 @@ namespace NZVirusSimulator
                 totalCases += newCommunityCases;
             }
 
-            casesOnDay[13] = newCommunityCases; // Add community cases to new cases on this da
+            casesOnDay[13] = newCommunityCases; // Add community cases to new cases on this day
             activeCases -= casesOnDay[0]; // Remove cases from active cases if it has been 14 days
             importedCases += newImportedCases; // Adds newImportedCases to the total importedCases count
             closedCases += casesOnDay[0]; // Adds all cases that have finished their 14 days to closedCases variable
@@ -320,6 +334,7 @@ namespace NZVirusSimulator
             recoveredCases += casesOnDay[0] - newDeaths; // Recovered cases equal cases after 14 days minus the death toll of the day
 
             //---------------------------------------------------------------------------------------------------------
+
 
             // Check if game is over
             if (activeCases >= population)
