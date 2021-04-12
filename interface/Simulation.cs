@@ -144,10 +144,6 @@ namespace NZVirusSimulator
             Scripts.DrawTitle("Simulation");
             Console.WriteLine("Simulating Day {0}", day);
             Console.WriteLine();
-            Console.WriteLine("----------------------------------------------------------");
-            Console.WriteLine("News: {0}", Headline());
-            Console.WriteLine("----------------------------------------------------------");
-            Console.WriteLine();
             Console.WriteLine("--------------------------");
             Console.WriteLine("Total Cases: {0}", totalCases);
             Console.WriteLine("Total Deaths: {0}", deaths);
@@ -242,17 +238,6 @@ namespace NZVirusSimulator
                     Draw(false); // Re-draw information without simulating
                     break;
             }
-        }
-
-        // Display headline based on case, death, vaccine or day information
-        public static string Headline()
-        {
-            if (day == 0)
-            {
-                return "New Virus has MANIFESTED in Aotearoa";
-            }
-
-            return "Virus Situation Remains the Same";
         }
 
         // Virus simulator algorithm
@@ -389,7 +374,6 @@ namespace NZVirusSimulator
             /* Add new community cases, total cases, set casesOnDay[13] variable to today's cases, active cases, 
             closed cases, deaths, recoveries, population decrease and calculate budget changes */
 
-            communityCases += newCommunityCases; // Add new community cases to community case count
             // Conditional statement that changes totalCases equation based on border status
             // (Because imported cases count as community cases when the borders are open, a different calculation is required for closed borders)
             if (bordersClosed)
@@ -403,6 +387,7 @@ namespace NZVirusSimulator
                 totalCases += newCommunityCases;
             }
 
+            communityCases += newCommunityCases; // Add new community cases to community case count
             casesOnDay[13] = newCommunityCases + newImportedCases; // Add new community cases and imported cases to new cases on this day
             activeCases -= casesOnDay[0]; // Remove cases from active cases if it has been 14 days
             importedCases += newImportedCases; // Adds newImportedCases to the total importedCases count
