@@ -20,9 +20,13 @@ namespace NZVirusSimulator
         // Government information
         public static double budget = 5000000000; // Base budget of 5 billion
         public static double expenses = 0; // Total expenses
-        public static int passengersEntering = 300; // Used to determine how many passengers are entering NZ per day
+        public static int passengersEntering = 500; // Used to determine how many passengers are entering NZ per day
         public static double vaccinations = 0; // Total vaccination count
-        public static double newVaccinations = 0; // New vaccination count
+        public static double vaccinationRate = 0; // Number of vaccinations per day
+        public static bool vaccinating = false; // If true, population is vaccinating
+        public static int vaccineCost = 15; // Vaccine cost per dose
+        public static double vaccineExpenses = 0; // Expenses specifically for vaccines
+        public static int caseDownByVaccine = 50; // Active cases reduced by vaccinations per day
         public static int alertLevel = 1;
         public static double alertLevelExpenses = 0; // Expenses specifically for alert level changes
         public static double population = 4917000; // Population of New Zealand
@@ -60,9 +64,10 @@ namespace NZVirusSimulator
             workingRValue = rValue; // Changed to reduce transmissions
             fatalityRate = 3.4; // 3.4%
             budget = 5000000000; // Base budget of 5 billion
-            passengersEntering = 300; // Used to determine how many passengers are entering NZ per day
+            passengersEntering = 500; // Used to determine how many passengers are entering NZ per day
             vaccinations = 0; // Total vaccination count
-            newVaccinations = 0; // New vaccination count
+            vaccineCost = 15; // Vaccine cost per dose
+            vaccinationRate = 0; // New vaccination count
             alertLevel = 1;
             population = 4917000; // Population of New Zealand
             bordersClosed = false; // When the borders are open, max imported cases will increase
@@ -107,7 +112,7 @@ namespace NZVirusSimulator
             // Depending on success a different message will be displayed
             if (finishSuccess == "vaccinated")
             {
-                Console.WriteLine("Congratulations, you succeeded!");
+                Console.WriteLine("Congratulations, you succesfully protected New Zealand by vaccination!");
             }
             else if (finishSuccess == "herd_infection")
             {
@@ -120,7 +125,6 @@ namespace NZVirusSimulator
             else
             {
                 Console.WriteLine("Simulation Canceled."); // Runs if sim gets cancelled by player
-
             }
 
             ResetDefaults(); // Reset game upon completion
@@ -161,7 +165,7 @@ namespace NZVirusSimulator
             Console.WriteLine("Fatality Rate: {0}", fatalityRate);
             Console.WriteLine("--------------------------");
             Console.WriteLine("Vaccinations: {0}", vaccinations);
-            Console.WriteLine("New Vaccinations: {0}", newVaccinations);
+            Console.WriteLine("Vaccination Rate: {0}", vaccinationRate);
             Console.WriteLine("--------------------------");
             Console.WriteLine("Population: {0}", population);
             Console.WriteLine("Alert Level: {0}", alertLevel);
@@ -216,9 +220,16 @@ namespace NZVirusSimulator
                     AlertLevel.Start(); // Run alert level mini application
                     break;
                 case 3:
-                    Console.WriteLine("Error: This option is not available [Please Wait...]");
-                    Thread.Sleep(2000);
-                    Draw(false);
+                    if (day < 80)
+                    {
+                        Console.WriteLine("You cannot vaccinate until day 80! [Please Wait...]");
+                        Thread.Sleep(2000);
+                        Draw(false); // Re-draw information without simulating
+                    }
+                    else
+                    {
+                        Vaccinations.Start(); // Run vaccinations mini application
+                    }
                     break;
                 case 4:
                     break;
@@ -228,7 +239,7 @@ namespace NZVirusSimulator
                 default:
                     Console.WriteLine("Error: Please enter a valid option [Please Wait...]");
                     Thread.Sleep(2000); 
-                    Draw(false);
+                    Draw(false); // Re-draw information without simulating
                     break;
             }
         }
@@ -266,6 +277,18 @@ namespace NZVirusSimulator
             else
             {
                 workingRValue = rValue; // Virus is as transimissible as possible
+            }
+
+            // Code to run if vaccinating
+            if (vaccinating)
+            {
+                vaccinations += vaccinationRate; // Add vaccination rate to total vaccinations
+
+                // When activeCases are declining due to vaccinations, set activecases to 0 if the rate makes the cases fall below 0
+                if (activeCases - caseDownByVaccine > 0)
+                {
+                    activeCases -= caseDownByVaccine; // Subtract the active cases reduced from vaccinations from active cases
+                }
             }
 
             // Array Stepper (Move delayed case counts/Move active case 'timer' array down a step)
@@ -324,8 +347,8 @@ namespace NZVirusSimulator
                     }
                 }
 
-                // 1 in (passengersEntering) chance of having a community case outbreak with closed borders
-                if (Scripts.RandomNumber(passengersEntering) == 1)
+                // 1 in 100 chance of having a community case outbreak with closed borders
+                if (Scripts.RandomNumber(100) == 1)
                 {
                     newCommunityCases++;
                 }
@@ -380,7 +403,7 @@ namespace NZVirusSimulator
                 totalCases += newCommunityCases;
             }
 
-            casesOnDay[13] = newCommunityCases; // Add community cases to new cases on this day
+            casesOnDay[13] = newCommunityCases + newImportedCases; // Add new community cases and imported cases to new cases on this day
             activeCases -= casesOnDay[0]; // Remove cases from active cases if it has been 14 days
             importedCases += newImportedCases; // Adds newImportedCases to the total importedCases count
             closedCases += casesOnDay[0]; // Adds all cases that have finished their 14 days to closedCases variable
@@ -400,7 +423,7 @@ namespace NZVirusSimulator
                 gameRunning = false; // Stop simulation loop
                 finishSuccess = "herd_infection"; // Player did not succeed (everyone infected)
             }
-            else if (vaccinations >= population)
+            else if (vaccinations >= population * 2) // *2 because 2 dose vaccine
             {
                 gameRunning = false; // Stop simulation loop
                 finishSuccess = "vaccinated"; // Player succeeded
