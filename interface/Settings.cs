@@ -23,7 +23,6 @@ namespace NZVirusSimulator
             Console.WriteLine("Fatality Rate: {0}", Simulation.fatalityRate);
             Console.WriteLine("Starting Budget: ${0}", Simulation.budget);
             Console.WriteLine("Vaccine Cost/Dose: ${0}", Simulation.vaccineCost);
-            Console.WriteLine("Passengers Entering/Day: {0}", Simulation.passengersEntering);
             Console.WriteLine("-----------------------------------");
             DrawMenu(read);
         }
@@ -38,9 +37,8 @@ namespace NZVirusSimulator
             Console.WriteLine("| 3: Fatality Rate            |");
             Console.WriteLine("| 4: Budget                   |");
             Console.WriteLine("| 5: Vaccine Cost/Dose        |");
-            Console.WriteLine("| 6: Passengers Entering/Day  |");
-            Console.WriteLine("| 7: Reset to Defaults        |");
-            Console.WriteLine("| 8: Exit                     |");
+            Console.WriteLine("| 6: Reset to Defaults        |");
+            Console.WriteLine("| 7: Exit                     |");
             Console.WriteLine(" -----------------------------");
             Console.WriteLine();
             if (read) // Only read menu if boolean is true (for Y/N at the bottom)
@@ -97,13 +95,8 @@ namespace NZVirusSimulator
                     Simulation.vaccineCost = IntReadHandler(); // vaccineCost = The value returned by the integer read handler
                     Draw(true);
                     break;
-                // Change Passengers Entering/Day
-                case 6:
-                    Simulation.passengersEntering = IntReadHandler(); // vaccineCost = The value returned by the integer read handler
-                    Draw(true);
-                    break;
                 // Asks if you want to reset, then it resets
-                case 7:
+                case 6:
                     // Ask for Y or N input
                     while (yn == "")
                     {
@@ -132,7 +125,7 @@ namespace NZVirusSimulator
                     }
                     yn = "";
                     break;
-                case 8:
+                case 7:
                     MainMenu.Draw();
                     break;
                 default:

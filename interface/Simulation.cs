@@ -20,7 +20,6 @@ namespace NZVirusSimulator
         // Government information
         public static double budget = 5000000000; // Base budget of 5 billion
         public static double expenses = 0; // Total expenses
-        public static int passengersEntering = 500; // Used to determine how many passengers are entering NZ per day
         public static double vaccinations = 0; // Total vaccination count
         public static double vaccinationRate = 0; // Number of vaccinations per day
         public static bool vaccinating = false; // If true, population is vaccinating
@@ -64,7 +63,6 @@ namespace NZVirusSimulator
             workingRValue = rValue; // Changed to reduce transmissions
             fatalityRate = 3.4; // 3.4%
             budget = 5000000000; // Base budget of 5 billion
-            passengersEntering = 500; // Used to determine how many passengers are entering NZ per day
             vaccinations = 0; // Total vaccination count
             vaccineCost = 15; // Vaccine cost per dose
             vaccinationRate = 0; // New vaccination count
