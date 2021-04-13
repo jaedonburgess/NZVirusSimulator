@@ -112,7 +112,7 @@ namespace NZVirusSimulator
             // Depending on success a different message will be displayed
             if (finishSuccess == "vaccinated")
             {
-                Console.WriteLine("Congratulations, you succesfully protected New Zealand by vaccination!");
+                Console.WriteLine("Congratulations, you successfully protected New Zealand by vaccination!");
             }
             else if (finishSuccess == "herd_infection")
             {
@@ -256,7 +256,7 @@ namespace NZVirusSimulator
             else if (alertLevel == 3)
             {
                 isolationEnforced = false; // Transmission is possible
-                workingRValue = 0.1; // Reduces transimission to a significantly low point
+                workingRValue = 0.1; // Reduces transmission to a significantly low point
             }
             else if (alertLevel == 2)
             {
@@ -266,7 +266,7 @@ namespace NZVirusSimulator
             else
             {
                 isolationEnforced = false; // Transmission is possible
-                workingRValue = rValue; // Virus is as transimissible as possible
+                workingRValue = rValue; // Virus is as transmissible as possible
             }
 
             // Code to run if vaccinating
