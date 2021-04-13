@@ -143,6 +143,8 @@ namespace NZVirusSimulator
             Console.WriteLine("Simulating Day {0}", day);
             Console.WriteLine();
             Console.WriteLine("--------------------------");
+            Console.WriteLine(virusName);
+            Console.WriteLine("--------------------------");
             Console.WriteLine("Total Cases: {0}", totalCases);
             Console.WriteLine("Total Deaths: {0}", deaths);
             Console.WriteLine("Closed Cases: {0}", closedCases);
