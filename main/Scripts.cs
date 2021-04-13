@@ -52,8 +52,9 @@ namespace NZVirusSimulator
             string str = "";
 
             // Run while string is empty
-            while(str == "")
+            while (str == "")
             {
+                // Try read a string
                 try
                 {
                     str = Console.ReadLine();
@@ -63,7 +64,8 @@ namespace NZVirusSimulator
                     return strError;
                 }
 
-                if(str == "")
+                // Return error if string is empty
+                if (str == "")
                 {
                     return strError;
                 }
@@ -83,6 +85,32 @@ namespace NZVirusSimulator
                 try
                 {
                     num = Int32.Parse(Console.ReadLine());
+                }
+                catch
+                {
+                    return intError;
+                }
+
+                if (num == 0)
+                {
+                    return intError;
+                }
+            }
+            return num;
+        }
+
+        // Read an double
+        public static double ReadDb()
+        {
+            // Init variables
+            double num = 0;
+
+            // Run while string is empty
+            while (num == 0)
+            {
+                try
+                {
+                    num = Double.Parse(Console.ReadLine());
                 }
                 catch
                 {

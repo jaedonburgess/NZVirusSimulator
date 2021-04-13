@@ -16,11 +16,15 @@ namespace NZVirusSimulator
         {
             Console.Clear();
             Scripts.DrawTitle("Settings");
+            Console.WriteLine();
+            Console.WriteLine("-----------------------------------");
             Console.WriteLine("Virus Name: {0}", Simulation.virusName);
             Console.WriteLine("Virus R Value: {0}", Simulation.rValue);
             Console.WriteLine("Fatality Rate: {0}", Simulation.fatalityRate);
             Console.WriteLine("Starting Budget: ${0}", Simulation.budget);
-            Console.WriteLine("Maximum Imported Cases: {0} cases", Simulation.maxImported);
+            Console.WriteLine("Vaccine Cost/Dose: ${0}", Simulation.vaccineCost);
+            Console.WriteLine("Passengers Entering/Day: {0}", Simulation.passengersEntering);
+            Console.WriteLine("-----------------------------------");
             DrawMenu(read);
         }
 
@@ -28,11 +32,16 @@ namespace NZVirusSimulator
         public static void DrawMenu(bool read)
         {
             Console.WriteLine();
-            Console.WriteLine(" -----------------------");
-            Console.WriteLine("| 1: Change Settings    |");
-            Console.WriteLine("| 2: Reset to Defaults  |");
-            Console.WriteLine("| 3: Exit               |");
-            Console.WriteLine(" -----------------------");
+            Console.WriteLine(" -----------------------------");
+            Console.WriteLine("| 1: Virus Name               |");
+            Console.WriteLine("| 2: R-Value                  |");
+            Console.WriteLine("| 3: Fatality Rate            |");
+            Console.WriteLine("| 4: Budget                   |");
+            Console.WriteLine("| 5: Vaccine Cost/Dose        |");
+            Console.WriteLine("| 6: Passengers Entering/Day  |");
+            Console.WriteLine("| 7: Reset to Defaults        |");
+            Console.WriteLine("| 8: Exit                     |");
+            Console.WriteLine(" -----------------------------");
             Console.WriteLine();
             if (read) // Only read menu if boolean is true (for Y/N at the bottom)
             {
@@ -63,14 +72,38 @@ namespace NZVirusSimulator
             //Checks through options to execute valid options and reset invalid options
             switch (option)
             {
-                // Asks each value, then displays the new values
+                // Change Virus Name
                 case 1:
-                    Console.WriteLine("This option is under construction [Please Wait...]");
-                    Thread.Sleep(2000);
+                    Simulation.virusName = StringReadHandler(); // virusName = The value returned by the string read handler
+                    Draw(true);
+                    break;
+                // Change R-Value
+                case 2:
+                    Simulation.rValue = DoubleReadHandler(2); // fatalityRate = The value returned by the double read handler rounded to 2 decimal places
+                    Draw(true);
+                    break;
+                // Change Fatality Rate
+                case 3:
+                    Simulation.fatalityRate = DoubleReadHandler(2); // fatalityRate = The value returned by the double read handler rounded to 2 decimal places
+                    Draw(true);
+                    break;
+                // Change Budget
+                case 4:
+                    Simulation.budget = DoubleReadHandler(0); // budget = The value returned by the double read handler rounded to 0 decimal places
+                    Draw(true);
+                    break;
+                // Change Vaccine Cost/Dose
+                case 5:
+                    Simulation.vaccineCost = IntReadHandler(); // vaccineCost = The value returned by the integer read handler
+                    Draw(true);
+                    break;
+                // Change Passengers Entering/Day
+                case 6:
+                    Simulation.passengersEntering = IntReadHandler(); // vaccineCost = The value returned by the integer read handler
                     Draw(true);
                     break;
                 // Asks if you want to reset, then it resets
-                case 2:
+                case 7:
                     // Ask for Y or N input
                     while (yn == "")
                     {
@@ -99,7 +132,7 @@ namespace NZVirusSimulator
                     }
                     yn = "";
                     break;
-                case 3:
+                case 8:
                     MainMenu.Draw();
                     break;
                 default:
@@ -108,6 +141,75 @@ namespace NZVirusSimulator
                     Draw(true);
                     break;
             }
+        }
+
+        // Application specific handle of the ReadDb() method
+        public static double DoubleReadHandler(int roundingValue)
+        {
+            double tempDb = 0; // Temporary Double Value
+
+            while (tempDb == 0)
+            {
+                // Read double
+                Console.WriteLine("Please enter a value:");
+                tempDb = Scripts.ReadDb();
+
+                if (tempDb == Scripts.intError) // intError applies to doubles as well
+                {
+                    Console.WriteLine("Error: The value you entered is not valid [Please Wait...]");
+                    Thread.Sleep(2000);
+                    Draw(false); // Draw without running the ReadMenu() method
+                    tempDb = 0; // Reset tempStr if an error occurs
+                    continue;
+                }
+            }
+            return Math.Round(tempDb, roundingValue, MidpointRounding.ToEven); // Return rounded value of the number entered
+        }
+
+        // Application specific handle of the ReadString() method
+        public static string StringReadHandler()
+        {
+            string tempStr = ""; // Temporary String Value
+
+            while (tempStr == "")
+            {
+                // Read String
+                Console.WriteLine("Please enter a string:");
+                tempStr = Scripts.ReadString();
+
+                if (tempStr == Scripts.strError)
+                {
+                    Console.WriteLine("Error: The string you entered is not valid [Please Wait...]");
+                    Thread.Sleep(2000);
+                    Draw(false); // Draw without running the ReadMenu() method
+                    tempStr = ""; // Reset tempStr if an error occurs
+                    continue;
+                }
+            }
+            return tempStr;
+        }
+
+        // Application specific handle of the ReadInt() method
+        public static int IntReadHandler()
+        {
+            int tempInt = 0; // Temporary Integer Value
+
+            while (tempInt == 0)
+            {
+                // Read integer
+                Console.WriteLine("Please enter an integer value:");
+                tempInt = Scripts.ReadInt();
+
+                if (tempInt == Scripts.intError) // intError applies to doubles as well
+                {
+                    Console.WriteLine("Error: The value you entered is not valid integer [Please Wait...]");
+                    Thread.Sleep(2000);
+                    Draw(false); // Draw without running the ReadMenu() method
+                    tempInt = 0; // Reset tempStr if an error occurs
+                    continue;
+                }
+            }
+            return tempInt;
         }
     }
 }

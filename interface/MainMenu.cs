@@ -19,8 +19,7 @@ namespace NZVirusSimulator
             Console.WriteLine(" -----------------------");
             Console.WriteLine("| 1: Simulate           |");
             Console.WriteLine("| 2: View Settings      |");
-            Console.WriteLine("| 3: Load Presets       |");
-            Console.WriteLine("| 4: Exit               |");
+            Console.WriteLine("| 3: Exit               |");
             Console.WriteLine(" -----------------------");
             Console.WriteLine();
             ReadMenu(); //Asks for menu input
@@ -53,11 +52,6 @@ namespace NZVirusSimulator
                     Settings.Start();
                     break;
                 case 3:
-                    Console.WriteLine("This option is under construction [Please Wait...]");
-                    Thread.Sleep(2000);
-                    Draw();
-                    break;
-                case 4:
                     // *EXITING A C# APPLICATION PROPERLY*
                     // https://stackoverflow.com/questions/12977924/how-to-properly-exit-a-c-sharp-application
                     Console.Clear();
