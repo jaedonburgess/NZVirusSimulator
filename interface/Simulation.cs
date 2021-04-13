@@ -255,14 +255,17 @@ namespace NZVirusSimulator
             }
             else if (alertLevel == 3)
             {
+                isolationEnforced = false; // Transmission is possible
                 workingRValue = 0.1; // Reduces transimission to a significantly low point
             }
             else if (alertLevel == 2)
             {
+                isolationEnforced = false; // Transmission is possible
                 workingRValue = rValue / 2; // Halves the transmissibility of the virus
             }
             else
             {
+                isolationEnforced = false; // Transmission is possible
                 workingRValue = rValue; // Virus is as transimissible as possible
             }
 
