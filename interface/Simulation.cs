@@ -62,6 +62,9 @@ namespace NZVirusSimulator
             workingRValue = rValue; // Changed to reduce transmissions
             fatalityRate = 3.4; // 3.4%
             budget = 5000000000; // Base budget of 5 billion
+            expenses = 0; // Total expenses
+            alertLevelExpenses = 0; // Expenses specifically for alert level changes
+            vaccineExpenses = 0; // Expenses specifically for vaccines
             vaccinations = 0; // Total vaccination count
             vaccineCost = 15; // Vaccine cost per dose
             vaccinationRate = 0; // New vaccination count
