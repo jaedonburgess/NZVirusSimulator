@@ -20,7 +20,7 @@ namespace NZVirusSimulator
             Console.WriteLine(" -----------------------------------------------------");
             Console.WriteLine(" Vaccination Rate: {0}", Simulation.vaccinationRate);
             Console.WriteLine(" Vaccination Cost: ${0}/dose OR ${1} total", Simulation.vaccineCost, (Simulation.vaccineCost * 2) * Simulation.population);
-            Console.WriteLine(" Daily Vaccine Expenses: {0}", Simulation.vaccineExpenses);
+            Console.WriteLine(" Daily Vaccine Expenses: ${0}", Simulation.vaccineExpenses);
             Console.WriteLine(" Budget: ${0}", Simulation.budget);
             Console.WriteLine(" -----------------------------------------------------");
             Console.WriteLine();
