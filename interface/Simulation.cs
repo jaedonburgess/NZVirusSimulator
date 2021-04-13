@@ -25,7 +25,6 @@ namespace NZVirusSimulator
         public static bool vaccinating = false; // If true, population is vaccinating
         public static int vaccineCost = 15; // Vaccine cost per dose
         public static double vaccineExpenses = 0; // Expenses specifically for vaccines
-        public static int caseDownByVaccine = 50; // Active cases reduced by vaccinations per day
         public static int alertLevel = 1;
         public static double alertLevelExpenses = 0; // Expenses specifically for alert level changes
         public static double population = 4917000; // Population of New Zealand
@@ -268,12 +267,6 @@ namespace NZVirusSimulator
             if (vaccinating)
             {
                 vaccinations += vaccinationRate; // Add vaccination rate to total vaccinations
-
-                // When activeCases are declining due to vaccinations, set activecases to 0 if the rate makes the cases fall below 0
-                if (activeCases - caseDownByVaccine > 0)
-                {
-                    activeCases -= caseDownByVaccine; // Subtract the active cases reduced from vaccinations from active cases
-                }
             }
 
             // Array Stepper (Move delayed case counts/Move active case 'timer' array down a step)
@@ -400,7 +393,6 @@ namespace NZVirusSimulator
             budget -= expenses;
 
             //---------------------------------------------------------------------------------------------------------
-
 
             // Check if game is over
             if (activeCases >= population)
